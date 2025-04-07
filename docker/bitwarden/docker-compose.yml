@@ -1,0 +1,8 @@
+services:
+  bitwarden:
+    image: vaultwarden/server:latest
+    container_name: bitwarden
+    volumes:
+      - /data/bitwarden/:/data/
+    ports:
+      - 8001:80

@@ -1,0 +1,10 @@
+services:
+  usos-bot:
+    image: usos-bot:latest
+    container_name: usos-bot
+    restart: unless-stopped
+    env_file:
+      - stack.env
+    volumes:
+      - /data/repos/UsosBot:/usr/src/bot
+    command: python3 main.py
