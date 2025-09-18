@@ -79,6 +79,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    environment:
+      - TZ=Europe/Warsaw
+      - PORT=5055
+    ports:
+      - 5055:5055
+    volumes:
+      - /data/jellyseerr/config:/app/config
+    restart: unless-stopped
+
   jackett:
     image: lscr.io/linuxserver/jackett:latest
     container_name: jackett
