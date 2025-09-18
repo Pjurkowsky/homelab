@@ -9,7 +9,7 @@ services:
       - PASSWORD_HASH=${PASSWORD_HASH}
 
     image: ghcr.io/wg-easy/wg-easy
-    container_name: wg-easy
+    container_name: wireguard
     volumes:
       - /data/wireguard:/etc/wireguard
     ports:
