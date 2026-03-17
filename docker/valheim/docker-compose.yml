@@ -1,0 +1,15 @@
+name: valheim
+services:
+    valheim-server:
+        container_name: valheim-server
+        cap_add:
+            - sys_nice
+        stop_grace_period: "120s"
+        ports:
+            - 2456-2457:2456-2457/udp
+        volumes:
+            - /data/valheim-server/config:/config
+            - /data/valheim-server/data:/opt/valheim
+        env_file:
+            - .env 
+        image: lloesche/valheim-server

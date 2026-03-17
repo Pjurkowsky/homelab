@@ -1,0 +1,159 @@
+vacuum_clean_bed:
+  alias: 'Vacuum: Clean Bed'
+  sequence:
+  - alias: Room = Bed2
+    action: vacuum.send_command
+    target:
+      entity_id: vacuum.ilife_a30_pro_2
+    data:
+      command: part_clean
+  - alias: Room = Bed
+    action: vacuum.send_command
+    target:
+      entity_id: vacuum.ilife_a30_pro_2
+    data:
+      command: AQEAAAAg
+  description: ''
+sleep:
+  sequence:
+  - action: light.turn_off
+    metadata: {}
+    data: {}
+    target:
+      area_id: bedroom
+  - device_id: 08e8f41fed0f42e286c6022f94a739d3
+    domain: button
+    entity_id: 5eaf8a7ac931526b927533e5658ddac2
+    type: press
+  - action: system_bridge.power_command
+    metadata: {}
+    data:
+      bridge: 679a67e54f025d214ae221ed78569329
+      command: sleep
+    response_variable: pjury-linux
+  alias: sleep
+  description: ''
+vacuum_room_2_test:
+  alias: Vacuum room 2 test
+  sequence:
+  - action: text.set_value
+    target:
+      entity_id: text.robot_vacuum_room_mask_raw
+    data:
+      value: AQEAAAAC
+  - delay:
+      seconds: 1
+  - action: select.select_option
+    target:
+      entity_id: select.robot_vacuum_raw_cleaning_mode
+    data:
+      option: part
+  - delay:
+      seconds: 1
+  - action: vacuum.start
+    target:
+      entity_id: vacuum.robot_vacuum
+  description: ''
+vacuum_room_2_and_6_test:
+  alias: Vacuum room 2 and 6 test
+  sequence:
+  - action: text.set_value
+    target:
+      entity_id: text.robot_vacuum_room_mask_raw
+    data:
+      value: AQEAAAAi
+  - delay:
+      seconds: 1
+  - action: select.select_option
+    target:
+      entity_id: select.robot_vacuum_raw_cleaning_mode
+    data:
+      option: part
+  - delay:
+      seconds: 1
+  - action: vacuum.start
+    target:
+      entity_id: vacuum.robot_vacuum
+  description: ''
+ilife_clean_selected_rooms:
+  alias: ILIFE Clean Selected Rooms
+  sequence:
+  - action: text.set_value
+    target:
+      entity_id: text.robot_vacuum_room_mask_raw
+    data:
+      value: "{% set mask =\n  (1 if is_state('input_boolean.ilife_room_1', 'on')
+        else 0) +\n  (2 if is_state('input_boolean.ilife_room_2', 'on') else 0) +\n
+        \ (4 if is_state('input_boolean.ilife_room_3', 'on') else 0) +\n  (8 if is_state('input_boolean.ilife_room_4',
+        'on') else 0) +\n  (16 if is_state('input_boolean.ilife_room_5', 'on') else
+        0) +\n  (32 if is_state('input_boolean.ilife_room_6', 'on') else 0)\n%} {%
+        if mask == 1 %}AQEAAAAB {% elif mask == 2 %}AQEAAAAC {% elif mask == 3 %}AQEAAAAD
+        {% elif mask == 4 %}AQEAAAAE {% elif mask == 5 %}AQEAAAAF {% elif mask ==
+        6 %}AQEAAAAG {% elif mask == 7 %}AQEAAAAH {% elif mask == 8 %}AQEAAAAI {%
+        elif mask == 9 %}AQEAAAAJ {% elif mask == 10 %}AQEAAAAK {% elif mask == 11
+        %}AQEAAAAL {% elif mask == 12 %}AQEAAAAM {% elif mask == 13 %}AQEAAAAN {%
+        elif mask == 14 %}AQEAAAAO {% elif mask == 15 %}AQEAAAAP {% elif mask == 16
+        %}AQEAAAAQ {% elif mask == 17 %}AQEAAAAR {% elif mask == 18 %}AQEAAAAS {%
+        elif mask == 19 %}AQEAAAAT {% elif mask == 20 %}AQEAAAAU {% elif mask == 21
+        %}AQEAAAAV {% elif mask == 22 %}AQEAAAAW {% elif mask == 23 %}AQEAAAAX {%
+        elif mask == 24 %}AQEAAAAY {% elif mask == 25 %}AQEAAAAZ {% elif mask == 26
+        %}AQEAAAAa {% elif mask == 27 %}AQEAAAAb {% elif mask == 28 %}AQEAAAAc {%
+        elif mask == 29 %}AQEAAAAd {% elif mask == 30 %}AQEAAAAe {% elif mask == 31
+        %}AQEAAAAf {% elif mask == 32 %}AQEAAAAg {% elif mask == 33 %}AQEAAAAh {%
+        elif mask == 34 %}AQEAAAAi {% elif mask == 35 %}AQEAAAAj {% elif mask == 36
+        %}AQEAAAAk {% elif mask == 37 %}AQEAAAAl {% elif mask == 38 %}AQEAAAAm {%
+        elif mask == 39 %}AQEAAAAn {% elif mask == 40 %}AQEAAAAo {% elif mask == 41
+        %}AQEAAAAp {% elif mask == 42 %}AQEAAAAq {% elif mask == 43 %}AQEAAAAr {%
+        elif mask == 44 %}AQEAAAAs {% elif mask == 45 %}AQEAAAAt {% elif mask == 46
+        %}AQEAAAAu {% elif mask == 47 %}AQEAAAAv {% elif mask == 48 %}AQEAAAAw {%
+        elif mask == 49 %}AQEAAAAx {% elif mask == 50 %}AQEAAAAy {% elif mask == 51
+        %}AQEAAAAz {% elif mask == 52 %}AQEAAAA0 {% elif mask == 53 %}AQEAAAA1 {%
+        elif mask == 54 %}AQEAAAA2 {% elif mask == 55 %}AQEAAAA3 {% elif mask == 56
+        %}AQEAAAA4 {% elif mask == 57 %}AQEAAAA5 {% elif mask == 58 %}AQEAAAA6 {%
+        elif mask == 59 %}AQEAAAA7 {% elif mask == 60 %}AQEAAAA8 {% elif mask == 61
+        %}AQEAAAA9 {% elif mask == 62 %}AQEAAAA+ {% elif mask == 63 %}AQEAAAA/ {%
+        else %}{% endif %}\n"
+  - delay:
+      seconds: 1
+  - action: select.select_option
+    target:
+      entity_id: select.robot_vacuum_raw_cleaning_mode
+    data:
+      option: part
+  - delay:
+      seconds: 1
+  - action: vacuum.start
+    target:
+      entity_id: vacuum.robot_vacuum
+  mode: single
+  description: ''
+ilife_clear_selected_rooms:
+  alias: ILIFE Clear Selected Rooms
+  sequence:
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.ilife_room_1
+      - input_boolean.ilife_room_2
+      - input_boolean.ilife_room_3
+      - input_boolean.ilife_room_4
+      - input_boolean.ilife_room_5
+      - input_boolean.ilife_room_6
+  mode: single
+  description: ''
+ilife_run_or_end:
+  alias: ILIFE Run or End
+  sequence:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.ilife_robot_working
+        state: 'on'
+      sequence:
+      - action: vacuum.return_to_base
+        target:
+          entity_id: vacuum.robot_vacuum
+    default:
+    - action: script.ilife_clean_selected_rooms
+  mode: single
+  description: ''

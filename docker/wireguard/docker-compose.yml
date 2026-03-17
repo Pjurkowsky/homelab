@@ -3,11 +3,9 @@ volumes:
 
 services:
   wg-easy:
-    environment:
-      - LANG=en
-      - WG_HOST=${HOST_IP}
-      - PASSWORD_HASH=${PASSWORD_HASH}
 
+    env_file:
+      - .env
     image: ghcr.io/wg-easy/wg-easy
     container_name: wireguard
     volumes:

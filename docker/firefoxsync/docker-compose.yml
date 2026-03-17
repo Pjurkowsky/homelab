@@ -1,0 +1,92 @@
+services:
+  syncstorage:
+    image: ${REPOSITORY}:${SYNCSTORAGE_IMAGE}-${SYNCSTORAGE_IMAGE_TAG}
+    env_file:
+      - .env
+    environment:
+      SYNC_HOST: 0.0.0.0
+      SYNC_HUMAN_LOGS: 1
+      SYNC_MASTER_SECRET: ${SYNC_MASTER_SECRET}
+      SYNC_SYNCSTORAGE__DATABASE_URL: mysql://${MARIADB_SYNCSTORAGE_USER}:${MARIADB_SYNCSTORAGE_PASSWORD}@${MARIADB_SYNCSTORAGE_SERVER}:${MARIADB_SYNCSTORAGE_SERVER_PORT}/${MARIADB_SYNCSTORAGE_DATABASE}
+      SYNC_TOKENSERVER__ENABLED: "true"
+      SYNC_TOKENSERVER__RUN_MIGRATIONS: "true"
+      SYNC_TOKENSERVER__NODE_TYPE: mysql
+      SYNC_TOKENSERVER__DATABASE_URL: mysql://${MARIADB_TOKENSERVER_USER}:${MARIADB_TOKENSERVER_PASSWORD}@${MARIADB_TOKENSERVER_SERVER}:${MARIADB_TOKENSERVER_SERVER_PORT}/${MARIADB_TOKENSERVER_DATABASE}
+      SYNC_TOKENSERVER__FXA_EMAIL_DOMAIN: ${FXA_EMAIL_DOMAIN}
+      SYNC_TOKENSERVER__FXA_OAUTH_SERVER_URL: ${FXA_OAUTH_SERVER_URL}
+      SYNC_TOKENSERVER__FXA_METRICS_HASH_SECRET: ${METRICS_HASH_SECRET}
+      SYNC_TOKENSERVER__ADDITIONAL_BLOCKING_THREADS_FOR_FXA_REQUESTS: 2
+      RUST_LOG: info
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/__heartbeat__"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    depends_on:
+      syncstorage_db:
+        condition: service_healthy
+      tokenserver_db:
+        condition: service_healthy
+    ports:
+      - ${CONTAINER_EXPORT_PORT}:8000
+
+  syncstorage_db:
+    image: mariadb:lts
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
+      MARIADB_DATABASE: ${MARIADB_SYNCSTORAGE_DATABASE}
+      MARIADB_USER: ${MARIADB_SYNCSTORAGE_USER}
+      MARIADB_PASSWORD: ${MARIADB_SYNCSTORAGE_PASSWORD}
+      MARIADB_AUTO_UPGRADE: "true"
+    command: [mariadbd, --explicit_defaults_for_timestamp]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - syncstorage-db:/var/lib/mysql
+    restart: unless-stopped
+
+  tokenserver_db:
+    image: mariadb:lts
+    environment:
+      MARIADB_RANDOM_ROOT_PASSWORD: "true"
+      MARIADB_DATABASE: ${MARIADB_TOKENSERVER_DATABASE}
+      MARIADB_USER: ${MARIADB_TOKENSERVER_USER}
+      MARIADB_PASSWORD: ${MARIADB_TOKENSERVER_PASSWORD}
+      MARIADB_AUTO_UPGRADE: "true"
+    command: [mariadbd, --explicit_defaults_for_timestamp]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - tokenserver-db:/var/lib/mysql
+    restart: unless-stopped
+
+  tokenserver_db_init:
+    image: ${REPOSITORY}:${SYNCSTORAGE_INIT_IMAGE}-${SYNCSTORAGE_INIT_IMAGE_TAG}
+    depends_on:
+      tokenserver_db:
+        condition: service_healthy
+      syncstorage:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      MARIADB_SERVER: ${MARIADB_TOKENSERVER_SERVER}
+      MARIADB_SERVER_PORT: ${MARIADB_TOKENSERVER_SERVER_PORT}
+      MARIADB_DATABASE: ${MARIADB_TOKENSERVER_DATABASE}
+      MARIADB_USER: ${MARIADB_TOKENSERVER_USER}
+      MARIADB_PASSWORD: ${MARIADB_TOKENSERVER_PASSWORD}
+      MAX_USERS: ${MAX_USERS}
+      DOMAIN: ${SYNCSTORAGE_DOMAIN}
+    entrypoint: /db_init.sh
+
+volumes:
+  syncstorage-db:
+  tokenserver-db:

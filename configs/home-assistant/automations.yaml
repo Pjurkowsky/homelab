@@ -1,0 +1,56 @@
+- id: '1742949533346'
+  alias: test
+  description: ''
+  triggers:
+  - trigger: template
+    value_template: '{{ (now() + timedelta(minutes=1)).strftime(''%a %h %d %H:%M %Z
+      %Y'')  == (((state_attr(''sensor.pjury_phone_next_alarm'', ''Time in Milliseconds'')
+      | int / 1000)) | timestamp_custom(''%a %h %d %H:%M %Z %Y'')) }}
+
+      '
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: 85aab2d6f9e9d37a8098b14b7049eeee
+    entity_id: 9cfb98f6d54f6a63802e9f9e84fd03c7
+    domain: switch
+  mode: single
+- id: '1759714130245'
+  alias: New automation
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - light.wiz_rgbww_tunable_a6af94
+    to: 'on'
+  conditions: []
+  actions:
+  - action: light.turn_on
+    metadata: {}
+    data:
+      kelvin: 2000
+    target:
+      area_id: bedroom
+      device_id: 478ca282b2127e967f3f25de84945304
+  mode: single
+- id: '1773592733487'
+  alias: ILIFE Reset Rooms When Docked
+  triggers:
+  - trigger: state
+    entity_id: vacuum.robot_vacuum
+    to: docked
+  - trigger: state
+    entity_id: vacuum.robot_vacuum
+    to: idle
+  conditions: []
+  actions:
+  - action: input_boolean.turn_off
+    target:
+      entity_id:
+      - input_boolean.ilife_room_1
+      - input_boolean.ilife_room_2
+      - input_boolean.ilife_room_3
+      - input_boolean.ilife_room_4
+      - input_boolean.ilife_room_5
+      - input_boolean.ilife_room_6
+  mode: single

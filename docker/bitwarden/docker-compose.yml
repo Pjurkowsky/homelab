@@ -6,3 +6,7 @@ services:
       - /data/bitwarden/:/data/
     ports:
       - 8001:80
+    env_file:
+      - .env
+    environment:
+      - ADMIN_TOKEN=${VAULTWARDEN_ADMIN_TOKEN}

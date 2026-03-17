@@ -19,6 +19,8 @@ services:
     restart: always
     privileged: true
     network_mode: host
+    env_file:
+      - .env
     environment:
       - USERNAME=${USER}
       - PASSWORD=${PASSWORD}
@@ -40,9 +42,9 @@ services:
     restart: unless-stopped
     ports:
       - 8020:80
-    devices:
-      - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyACM0
-      - /dev/video0:/dev/video0
+   # devices:
+   #   - /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:/dev/ttyACM0
+   #   - /dev/video0:/dev/video0
 
     volumes:
       - /data/octoprint:/octoprint

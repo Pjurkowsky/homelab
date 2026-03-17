@@ -2,13 +2,12 @@ services:
   syncthing:
     image: lscr.io/linuxserver/syncthing:latest
     container_name: syncthing
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Etc/UTC
+    env_file:
+      - .env
     volumes:
       - /data/syncthing/config:/config
       - /data/obsidian/config/pjury:/data1
+      - /data/linux-config:/data2
     ports:
       - 8384:8384
       - 22000:22000/tcp
